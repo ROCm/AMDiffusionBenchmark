@@ -27,11 +27,27 @@ def tokenize_captions(
     captions = []
     if "prompt" in examples.keys():
         captions = examples["prompt"]
+    # else:
+    #     for example in examples["image"]:
+    #         path = example.filename
+    #         filename = os.path.splitext(os.path.basename(path))[0]
+    #         caption = filename.replace("_", " ")
+    #         captions.append(caption)
     else:
-        for example in examples["image"]:
-            path = example.filename
-            filename = os.path.splitext(os.path.basename(path))[0]
-            caption = filename.replace("_", " ")
+        for i, img in enumerate(examples["image"]):
+            # try several likely places for a path
+            path = getattr(img, "filename", None)  # PIL Image opened from disk
+            if path is None and isinstance(img, dict):
+                path = img.get("path")             # HF datasets when decode=False
+            if path is None and "image_path" in examples:
+                path = examples["image_path"][i]   # custom parallel column if you have one
+    
+            if path:
+                filename = os.path.splitext(os.path.basename(path))[0]
+                caption = filename.replace("_", " ")
+            else:
+                caption = f"image_{i}"             
+    
             captions.append(caption)
 
     inputs = tokenizer(captions)
