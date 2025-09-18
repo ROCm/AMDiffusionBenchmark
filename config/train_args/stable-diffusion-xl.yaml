@@ -4,7 +4,7 @@ defaults:
 
 model: stable-diffusion-xl
 model_path: stabilityai/stable-diffusion-xl-base-1.0
-train_data_path: bghira/pseudo-camera-10k
+train_data_path: frank-chieng/chinese_architecture_siheyuan
 train_batch_size: 20
 num_iterations: 200
 resolution: 1024
