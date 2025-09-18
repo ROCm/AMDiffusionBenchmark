@@ -15,7 +15,9 @@ import torch.distributed
 import torch.optim.optimizer
 import transformers
 from accelerate import Accelerator, ProfileKwargs
-from accelerate.utils import DummyOptim, DummyScheduler, DynamoBackend, set_seed
+# from accelerate.utils import DummyOptim, DummyScheduler, DynamoBackend, set_seed
+from accelerate.utils.deepspeed import DummyOptim, DummyScheduler
+from accelerate.utils import DynamoBackend, set_seed
 from diffusers.optimization import get_scheduler
 from diffusers.utils import export_to_video
 from torch.distributed.algorithms._checkpoint.checkpoint_wrapper import (
