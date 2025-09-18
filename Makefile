@@ -24,8 +24,8 @@ download_assets:
 		fi \
 	fi
 	# download pseudo-camera-10k dataset
-	@echo "\033[1;31mDownloading bghira/pseudo-camera-10k dataset\033[0m"
-	huggingface-cli download --repo-type=dataset bghira/pseudo-camera-10k
+	@echo "\033[1;31mDownloading frank-chieng/chinese_architecture_siheyuan dataset\033[0m"
+	huggingface-cli download --repo-type=dataset frank-chieng/chinese_architecture_siheyuan
 
 	# download FLUX.1-dev model and checkpoints
 	@echo "\033[1;31mDownloading black-forest-labs/FLUX.1-dev\033[0m"
@@ -34,22 +34,6 @@ download_assets:
 	# download stable-diffusion-xl model and checkpoints
 	@echo "\033[1;31mDownloading stabilityai/stable-diffusion-xl-base-1.0\033[0m"
 	huggingface-cli download stabilityai/stable-diffusion-xl-base-1.0
-
-	# download Disney-VideoGeneration-Dataset
-	@echo "\033[1;31mDownloading Wild-Heart/Disney-VideoGeneration-Dataset\033[0m"
-	huggingface-cli download --repo-type=dataset Wild-Heart/Disney-VideoGeneration-Dataset
-
-	# download HunyuanVideo model and checkpoints
-	@echo "\033[1;31mDownloading hunyuanvideo-community/HunyuanVideo\033[0m"
-	huggingface-cli download hunyuanvideo-community/HunyuanVideo
-
-	# download Mochi-1 model and checkpoints
-	@echo "\033[1;31mDownloading genmo/mochi-1-preview\033[0m"
-	huggingface-cli download genmo/mochi-1-preview
-
-	# download Wan2.1 model and checkpoints
-	@echo "\033[1;31mDownloading Wan-AI/Wan2.1-I2V-14B-480P-Diffusers\033[0m"
-	huggingface-cli download Wan-AI/Wan2.1-I2V-14B-480P-Diffusers
 
 	@echo "\033[1;31mDownloading completed.\033[0m"
 
