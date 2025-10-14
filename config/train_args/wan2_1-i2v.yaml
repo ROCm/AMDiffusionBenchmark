@@ -5,8 +5,8 @@ defaults:
 model: wan2_1-i2v
 model_path: Wan-AI/Wan2.1-I2V-14B-480P-Diffusers
 train_data_path: Wild-Heart/Disney-VideoGeneration-Dataset
-train_batch_size: 3
-num_iterations: 30
-resolution: "768,512"
-num_frames: 129
+num_frames: 9
 gradient_checkpointing: 1
+train_batch_size: 1
+num_iterations: 100
+resolution: "960,544"
