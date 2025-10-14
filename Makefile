@@ -35,6 +35,22 @@ download_assets:
 	@echo "\033[1;31mDownloading stabilityai/stable-diffusion-xl-base-1.0\033[0m"
 	huggingface-cli download stabilityai/stable-diffusion-xl-base-1.0
 
+	# download Disney-VideoGeneration-Dataset
+	@echo "\033[1;31mDownloading Wild-Heart/Disney-VideoGeneration-Dataset\033[0m"
+	huggingface-cli download --repo-type=dataset Wild-Heart/Disney-VideoGeneration-Dataset
+
+	# download HunyuanVideo model and checkpoints
+	@echo "\033[1;31mDownloading hunyuanvideo-community/HunyuanVideo\033[0m"
+	huggingface-cli download hunyuanvideo-community/HunyuanVideo
+
+	# download Mochi-1 model and checkpoints
+	@echo "\033[1;31mDownloading genmo/mochi-1-preview\033[0m"
+	huggingface-cli download genmo/mochi-1-preview
+
+	# download Wan2.1 model and checkpoints
+	@echo "\033[1;31mDownloading Wan-AI/Wan2.1-I2V-14B-480P-Diffusers\033[0m"
+	huggingface-cli download Wan-AI/Wan2.1-I2V-14B-480P-Diffusers
+
 	@echo "\033[1;31mDownloading completed.\033[0m"
 
 # Target to build the Docker image
