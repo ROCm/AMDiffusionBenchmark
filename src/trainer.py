@@ -728,23 +728,23 @@ class Trainer:
 
                 postpr_logs = {k: float(f"{v:.4E}") for k, v in logs.items()}
                 
-                # if self.accelerator.is_local_main_process:
-                #     logger.info(f"Step {global_step}: {postpr_logs}")
-                #     self.accelerator.log(logs, step=global_step)
-
-                def _fmt_num(k: str, v):
-                    if not isinstance(v, float):
-                        return v
-                    if k == "lr":
-                        return f"{v:.10f}"   # e.g., 0.0000100000
-                    return f"{v:.6f}"
-
                 if self.accelerator.is_local_main_process:
-                    formatted_logs = ", ".join([f"'{k}': {_fmt_num(k, v)}" for k, v in logs.items()])
-                    log_line = f"INFO - Step {global_step} - {{{formatted_logs}}}"
-                    print(log_line, flush=True)
-                    logger.info(log_line)
-                self.accelerator.log(logs, step=global_step)
+                    logger.info(f"Step {global_step}: {postpr_logs}")
+                    self.accelerator.log(logs, step=global_step)
+
+                # def _fmt_num(k: str, v):
+                #     if not isinstance(v, float):
+                #         return v
+                #     if k == "lr":
+                #         return f"{v:.10f}"   # e.g., 0.0000100000
+                #     return f"{v:.6f}"
+
+                # if self.accelerator.is_local_main_process:
+                #     formatted_logs = ", ".join([f"'{k}': {_fmt_num(k, v)}" for k, v in logs.items()])
+                #     log_line = f"INFO - Step {global_step} - {{{formatted_logs}}}"
+                #     print(log_line, flush=True)
+                #     logger.info(log_line)
+                # self.accelerator.log(logs, step=global_step)
 
                 # Break if the max number of iterations are exceeded
                 if global_step >= self.args.num_iterations:
