@@ -86,6 +86,60 @@ def _preprocess_images(
     return outputs
 
 
+# def _preprocess_videos(
+#     videos: Iterable,
+#     num_frames: int,
+#     train_transforms: callable = None,
+#     image_processor: callable = None,
+# ) -> List[Dict[str, torch.Tensor]]:
+#     outputs: Dict[str, List[torch.Tensor]] = {"pixel_values": []}
+#     if image_processor is not None:
+#         outputs["processed_image"] = []
+
+#     for video in videos:
+#         current_length = len(video)
+
+#         if num_frames > current_length:
+#             if safely_eval_as_bool(os.getenv("PAD_VIDEOS_TO_NUM_FRAMES", "false")):
+#                 # If num_frames is greater than the current length, pad with last frame
+#                 pad_length = num_frames - current_length
+#                 video = video.get_batch(list(range(current_length))).asnumpy()
+#                 video = np.concatenate(
+#                     [
+#                         video,
+#                         np.tile(video[-1], (pad_length, 1, 1, 1)),
+#                     ],
+#                     axis=0,
+#                 )
+#             else:
+#                 raise ValueError(
+#                     f"num_frames={num_frames} is longer than input video length {current_length}"
+#                 )
+#         else:
+#             video = video.get_batch(list(range(num_frames))).asnumpy()
+
+#         if image_processor is not None:
+#             image = video[0]  # first frame of the video
+#             image = image_processor(images=image, return_tensors="pt")["pixel_values"][
+#                 0
+#             ]
+#             outputs["processed_image"].append(image)
+
+#         if train_transforms:
+#             video = torch.stack(
+#                 [
+#                     train_transforms(torchvision.transforms.ToPILImage()(frame))
+#                     for frame in video
+#                 ]
+#             )
+
+#         outputs["pixel_values"].append(video)
+
+#     return outputs
+
+from decord import VideoReader, cpu
+import torch
+
 def _preprocess_videos(
     videos: Iterable,
     num_frames: int,
@@ -97,45 +151,42 @@ def _preprocess_videos(
         outputs["processed_image"] = []
 
     for video in videos:
-        current_length = len(video)
+        if not hasattr(video, "__len__"):
+            if isinstance(video, str):
+                video = VideoReader(video, ctx=cpu(0))
+            else:
+                frames = [f["data"] for f in video]  # TorchVision returns dicts
+                video = torch.stack(frames).permute(0, 2, 3, 1).numpy()
+
+        if hasattr(video, "__len__"):
+            current_length = len(video)
+        else:
+            current_length = video.shape[0]
 
         if num_frames > current_length:
-            if safely_eval_as_bool(os.getenv("PAD_VIDEOS_TO_NUM_FRAMES", "false")):
-                # If num_frames is greater than the current length, pad with last frame
-                pad_length = num_frames - current_length
-                video = video.get_batch(list(range(current_length))).asnumpy()
-                video = np.concatenate(
-                    [
-                        video,
-                        np.tile(video[-1], (pad_length, 1, 1, 1)),
-                    ],
-                    axis=0,
-                )
-            else:
-                raise ValueError(
-                    f"num_frames={num_frames} is longer than input video length {current_length}"
-                )
+            pad_length = num_frames - current_length
+            video = video.get_batch(list(range(current_length))).asnumpy() if isinstance(video, VideoReader) else video
+            video = np.concatenate([video, np.tile(video[-1], (pad_length, 1, 1, 1))], axis=0)
         else:
-            video = video.get_batch(list(range(num_frames))).asnumpy()
+            if isinstance(video, VideoReader):
+                video = video.get_batch(list(range(num_frames))).asnumpy()
+            else:
+                video = video[:num_frames]
 
         if image_processor is not None:
-            image = video[0]  # first frame of the video
-            image = image_processor(images=image, return_tensors="pt")["pixel_values"][
-                0
-            ]
+            image = video[0]
+            image = image_processor(images=image, return_tensors="pt")["pixel_values"][0]
             outputs["processed_image"].append(image)
-
         if train_transforms:
-            video = torch.stack(
-                [
-                    train_transforms(torchvision.transforms.ToPILImage()(frame))
-                    for frame in video
-                ]
-            )
+            video = torch.stack([
+                train_transforms(torchvision.transforms.ToPILImage()(frame))
+                for frame in video
+            ])
 
         outputs["pixel_values"].append(video)
 
     return outputs
+
 
 
 def preprocess_train(
