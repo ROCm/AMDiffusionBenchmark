@@ -23,11 +23,9 @@ The focus is on measuring how quickly different models can be trained (in terms 
     - [Reproducing the benchmarks](#reproducing-the-benchmarks)
   - [Training stability and convergence analysis](#training-stability-and-convergence-analysis)
   - [Contributing](#contributing)
-    - [Pre-commit hooks](#pre-commit-hooks)
-      - [Setup](#setup)
-      - [Usage](#usage)
-    - [Testing](#testing)
-      - [GPU-Dependent tests](#gpu-dependent-tests)
+  - [Security](#security)
+  - [Contact](#contact)
+  - [License](#license)
 
 ## Supported models
 
