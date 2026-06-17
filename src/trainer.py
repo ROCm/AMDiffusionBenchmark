@@ -8,6 +8,11 @@ from pathlib import Path
 from typing import Union
 
 import accelerate
+
+from src.data.hf_torchvision_video_shim import apply_torchvision_io_video_reader_shim
+
+apply_torchvision_io_video_reader_shim()
+
 import datasets
 import diffusers
 import torch
