@@ -138,7 +138,23 @@ def _preprocess_images(
 #     return outputs
 
 from decord import VideoReader, cpu
+import numpy as np
 import torch
+
+
+def _reader_batch_to_numpy(batch: object) -> np.ndarray:
+    """Decord returns NDArray with ``asnumpy()``; shims may return ndarray directly."""
+    if hasattr(batch, "asnumpy"):
+        return batch.asnumpy()
+    return np.asarray(batch)
+
+
+def _is_decord_style_reader(video: object) -> bool:
+    """True for decord ``VideoReader`` or ``torchvision.io`` HF shim from ``hf_torchvision_video_shim``."""
+    if isinstance(video, VideoReader):
+        return True
+    return bool(getattr(video, "_hf_shim_video_reader", False))
+
 
 def _preprocess_videos(
     videos: Iterable,
@@ -165,11 +181,16 @@ def _preprocess_videos(
 
         if num_frames > current_length:
             pad_length = num_frames - current_length
-            video = video.get_batch(list(range(current_length))).asnumpy() if isinstance(video, VideoReader) else video
+            if _is_decord_style_reader(video):
+                video = _reader_batch_to_numpy(
+                    video.get_batch(list(range(current_length)))
+                )
             video = np.concatenate([video, np.tile(video[-1], (pad_length, 1, 1, 1))], axis=0)
         else:
-            if isinstance(video, VideoReader):
-                video = video.get_batch(list(range(num_frames))).asnumpy()
+            if _is_decord_style_reader(video):
+                video = _reader_batch_to_numpy(
+                    video.get_batch(list(range(num_frames)))
+                )
             else:
                 video = video[:num_frames]
 
